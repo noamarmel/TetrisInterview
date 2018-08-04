@@ -24,7 +24,22 @@ public abstract class Block {
     }
 
     public void rotate90DegClockwise() {
+        int len = shapeMatrix.length;
+        for (int i = 0; i < len; i++) {
+            for (int j = 0; j < len - 1 - i; j++) {
+                boolean temp = shapeMatrix[i][j];
+                shapeMatrix[i][j] = shapeMatrix[len - 1 - j][len - 1 - i];
+                shapeMatrix[len - 1 - j][len - 1 - i] = temp;
+            }
+        }
 
+        for(int i = 0; i < len/2; i++){
+            for(int j = 0;j < len; j++){
+                boolean temp = shapeMatrix[i][j];
+                shapeMatrix[i][j] = shapeMatrix[len-1 -i][j];
+                shapeMatrix[len -1 -i][j] = temp;
+            }
+        }
     }
 
     public HashSet<Pair<Integer, Integer>> getAsHashSet() {

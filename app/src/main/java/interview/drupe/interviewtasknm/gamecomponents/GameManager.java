@@ -12,12 +12,10 @@ public class GameManager implements userInteractionListener {
     private static int DEFAULT_BLOCK_INSERTION_POSITION_X = 5;
     private static int DEFAULT_BLOCK_INSERTION_POSITION_Y = 0;
 
+    private Object boardLoopSyncObj = new Object();
     private Board gameBoard;
     private GameBlockHolder activeBlock;
-
     private boolean isGameBoardFull = false;
-    int actionDirection = 0;
-
     private Timer timer;
 
     private gameEventListener gameEventListener;
@@ -27,7 +25,7 @@ public class GameManager implements userInteractionListener {
         timer = new Timer();
         gameBoard = new Board(DEFAULT_BOARD_WIDTH, DEFAULT_BOARD_HEIGHT);
 
-        gameEventListener.onDrawResult(gameBoard.currentDraw);
+//        gameEventListener.onDrawResult(gameBoard.currentDraw);
     }
 
     public void runGameLoop() {
@@ -40,7 +38,7 @@ public class GameManager implements userInteractionListener {
         TimerTask gameLoopTask = new TimerTask() {
             @Override
             public void run() {
-//                synchronized (gameBoard) {
+                synchronized (boardLoopSyncObj) {
                     if (!isGameBoardFull) {
                         //schedule next step
                         runGameLoop();
@@ -52,7 +50,8 @@ public class GameManager implements userInteractionListener {
                         BoardDrawResponse response = gameBoard.draw(activeBlock.block, activeBlock.xPosition, activeBlock.yPosition + 1);
                         if (response.wasDrawSuccessful()) {
                             activeBlock.yPosition += 1;
-                            gameEventListener.onDrawResult(response.getCurrentDraw());
+//                            gameEventListener.onDrawResult(response.getCurrentDraw());
+                            gameEventListener.onDrawResult(response.getCurrentBoard(), gameBoard.getTableWidth(), gameBoard.getTableHeight());
                         } else {
                             if (activeBlock.yPosition == DEFAULT_BLOCK_INSERTION_POSITION_Y) {
                                 isGameBoardFull = true;
@@ -62,12 +61,13 @@ public class GameManager implements userInteractionListener {
                             {
                                 gameBoard.save(activeBlock.block, activeBlock.xPosition, activeBlock.yPosition);
                                 activeBlock = null;
-                                gameEventListener.onDrawResult(gameBoard.currentDraw);
+//                                gameEventListener.onDrawResult(null);//gameBoard.currentDraw);
+                                gameEventListener.onDrawResult(response.getCurrentBoard(), gameBoard.getTableWidth(), gameBoard.getTableHeight());
                             }
                         }
                     }
                 }
-//            }
+            }
         };
 
         return gameLoopTask;
@@ -82,12 +82,11 @@ public class GameManager implements userInteractionListener {
 
     @Override
     public void onMoveRight() {
-//        actionDirection = 1;
         BoardDrawResponse actionResponse = gameBoard.draw(activeBlock.block, activeBlock.xPosition + 1, activeBlock.yPosition );
         if (actionResponse.wasDrawSuccessful()) {
-            actionDirection = 0;
             activeBlock.xPosition += 1;
-            gameEventListener.onDrawResult(actionResponse.getCurrentDraw());
+//            gameEventListener.onDrawResult(actionResponse.getCurrentDraw());
+            gameEventListener.onDrawResult(actionResponse.getCurrentBoard(), gameBoard.getTableWidth(), gameBoard.getTableHeight());
         }
     }
 
@@ -95,16 +94,21 @@ public class GameManager implements userInteractionListener {
     public void onMoveLeft() {
         BoardDrawResponse actionResponse = gameBoard.draw(activeBlock.block, activeBlock.xPosition - 1, activeBlock.yPosition );
         if (actionResponse.wasDrawSuccessful()) {
-            actionDirection = 0;
             activeBlock.xPosition -= 1;
-            gameEventListener.onDrawResult(actionResponse.getCurrentDraw());
+//            gameEventListener.onDrawResult(actionResponse.getCurrentDraw());
+            gameEventListener.onDrawResult(actionResponse.getCurrentBoard(), gameBoard.getTableWidth(), gameBoard.getTableHeight());
         }
 
     }
 
     @Override
     public void onRotate() {
-
+        activeBlock.block.rotate90DegClockwise();
+        BoardDrawResponse actionResponse = gameBoard.draw(activeBlock.block, activeBlock.xPosition, activeBlock.yPosition );
+        if (actionResponse.wasDrawSuccessful()) {
+//            gameEventListener.onDrawResult(actionResponse.getCurrentDraw());
+            gameEventListener.onDrawResult(actionResponse.getCurrentBoard(), gameBoard.getTableWidth(), gameBoard.getTableHeight());
+        }
     }
 
     private class GameBlockHolder {
