@@ -1,4 +1,4 @@
-package interview.drupe.interviewtasknm.gamecomponents;
+package interview.drupe.interviewtasknm.gamecomponents.interaction;
 
 public interface userInteractionListener {
     void onMoveRight();

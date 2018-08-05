@@ -5,6 +5,9 @@ import java.util.TimerTask;
 
 import interview.drupe.interviewtasknm.gamecomponents.gameblocks.Block;
 import interview.drupe.interviewtasknm.gamecomponents.gameblocks.BlockFactory;
+import interview.drupe.interviewtasknm.gamecomponents.interaction.BoardDrawResponse;
+import interview.drupe.interviewtasknm.gamecomponents.interaction.gameEventListener;
+import interview.drupe.interviewtasknm.gamecomponents.interaction.userInteractionListener;
 
 public class GameManager implements userInteractionListener {
     private static int DEFAULT_BOARD_WIDTH = 10;
@@ -18,14 +21,12 @@ public class GameManager implements userInteractionListener {
     private boolean isGameBoardFull = false;
     private Timer timer;
 
-    private gameEventListener gameEventListener;
+    private interview.drupe.interviewtasknm.gamecomponents.interaction.gameEventListener gameEventListener;
 
     public GameManager(gameEventListener eventListener) {
         this.gameEventListener = eventListener;
         timer = new Timer();
         gameBoard = new Board(DEFAULT_BOARD_WIDTH, DEFAULT_BOARD_HEIGHT);
-
-//        gameEventListener.onDrawResult(gameBoard.currentDraw);
     }
 
     public void runGameLoop() {
@@ -50,7 +51,6 @@ public class GameManager implements userInteractionListener {
                         BoardDrawResponse response = gameBoard.draw(activeBlock.block, activeBlock.xPosition, activeBlock.yPosition + 1);
                         if (response.wasDrawSuccessful()) {
                             activeBlock.yPosition += 1;
-//                            gameEventListener.onDrawResult(response.getCurrentDraw());
                             gameEventListener.onDrawResult(response.getCurrentBoard(), gameBoard.getTableWidth(), gameBoard.getTableHeight());
                         } else {
                             if (activeBlock.yPosition == DEFAULT_BLOCK_INSERTION_POSITION_Y) {
@@ -61,7 +61,6 @@ public class GameManager implements userInteractionListener {
                             {
                                 gameBoard.save(activeBlock.block, activeBlock.xPosition, activeBlock.yPosition);
                                 activeBlock = null;
-//                                gameEventListener.onDrawResult(null);//gameBoard.currentDraw);
                                 gameEventListener.onDrawResult(response.getCurrentBoard(), gameBoard.getTableWidth(), gameBoard.getTableHeight());
                             }
                         }
@@ -85,7 +84,6 @@ public class GameManager implements userInteractionListener {
         BoardDrawResponse actionResponse = gameBoard.draw(activeBlock.block, activeBlock.xPosition + 1, activeBlock.yPosition );
         if (actionResponse.wasDrawSuccessful()) {
             activeBlock.xPosition += 1;
-//            gameEventListener.onDrawResult(actionResponse.getCurrentDraw());
             gameEventListener.onDrawResult(actionResponse.getCurrentBoard(), gameBoard.getTableWidth(), gameBoard.getTableHeight());
         }
     }
@@ -95,7 +93,6 @@ public class GameManager implements userInteractionListener {
         BoardDrawResponse actionResponse = gameBoard.draw(activeBlock.block, activeBlock.xPosition - 1, activeBlock.yPosition );
         if (actionResponse.wasDrawSuccessful()) {
             activeBlock.xPosition -= 1;
-//            gameEventListener.onDrawResult(actionResponse.getCurrentDraw());
             gameEventListener.onDrawResult(actionResponse.getCurrentBoard(), gameBoard.getTableWidth(), gameBoard.getTableHeight());
         }
 
@@ -106,7 +103,6 @@ public class GameManager implements userInteractionListener {
         activeBlock.block.rotate90DegClockwise();
         BoardDrawResponse actionResponse = gameBoard.draw(activeBlock.block, activeBlock.xPosition, activeBlock.yPosition );
         if (actionResponse.wasDrawSuccessful()) {
-//            gameEventListener.onDrawResult(actionResponse.getCurrentDraw());
             gameEventListener.onDrawResult(actionResponse.getCurrentBoard(), gameBoard.getTableWidth(), gameBoard.getTableHeight());
         }
     }

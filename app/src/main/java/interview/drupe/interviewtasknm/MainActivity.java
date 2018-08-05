@@ -5,7 +5,6 @@ import android.os.Build;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -14,7 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import interview.drupe.interviewtasknm.gamecomponents.GameManager;
-import interview.drupe.interviewtasknm.gamecomponents.gameEventListener;
+import interview.drupe.interviewtasknm.gamecomponents.interaction.gameEventListener;
 
 public class MainActivity extends AppCompatActivity {
     TextView drawTv;
